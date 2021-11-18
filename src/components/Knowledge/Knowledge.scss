@@ -1,0 +1,61 @@
+.knowledge {
+  padding: 180px 0 125px;
+  .knowledge__body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .knowledge__picture {
+      max-width: 387px;
+      width: 100%;
+    }
+    .knowledge__content {
+      max-width: 680px;
+      width: 100%;
+      text-align: right;
+      h2.knowledge__title {
+        margin-bottom: 10px;
+      }
+      .knowledge__text {
+        margin: 20px 0 32px;
+      }
+      .knowledge__btn  {
+        margin-left: auto;
+      }
+    }
+  }
+}
+
+/* ------ Media Queries ------ */
+
+/* 991.98-1192px - Large (container - 970px) */
+@media screen and (max-width: 1152px) {
+   .knowledge {
+      padding: 175px 0 96px;
+   }
+   .knowledge .knowledge__body .knowledge__picture {
+      max-width: 296px;
+   }
+}
+/* 767.98-991.98px - Medium (container - 750px) */
+@media screen and (max-width: 991.98px) {
+  
+}
+/* 479.98-767.98px - Small (container - 460px) */
+@media screen and (max-width: 767.98px) {
+   .knowledge {
+      padding: 145px 0 85px;
+   }
+   .knowledge .knowledge__body {
+      flex-direction: column;
+   }
+   .knowledge .knowledge__body .knowledge__picture {
+      max-width: 328px;
+      margin-bottom: 40px;
+      margin-left: auto;
+      margin-right: auto;
+   }
+}
+/* .... - 479.98px - Mobile (padding 10px) */
+@media screen and (max-width: 479.98px) {
+  
+}

@@ -1,0 +1,23 @@
+._btn {
+   max-width: 148px;
+   width: 100%;
+   padding: 12px 0;
+   border: none;
+   background-color: #f4e041;
+   border-radius: 80px;
+   font-size: 16px;
+   line-height: 1.6em;
+   text-align: center;
+   color: #000;
+   cursor: pointer;
+   transition: all .5s ease;
+   &:hover {
+      background-color: #ffe302;
+   }
+}
+
+a._btn {
+   display: block;
+   font-family: 'Nunito', sans-serif;
+	font-weight: 400;
+}
