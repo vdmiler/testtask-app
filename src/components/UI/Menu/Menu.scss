@@ -62,7 +62,7 @@
          }
       }
       .mobile-menu__list {
-         .mobile-menu__item:not(:last-child) {
+         .mobile-menu__item {
             margin-bottom: 22px;
          }
          .mobile-menu__item {
@@ -82,8 +82,17 @@
             }
             .mobile-menu__item_dropdown {
                padding-left: 8px;
+               .drop_down_arrow {
+                  width: 12px;
+                  height: 12px;
+                  margin-left: 20px;
+                  transition: all .5s ease;
+                  &._active {
+                     transform: rotate(180deg);
+                  }
+               }
                .submenu {
-                  margin-top: 53px;
+                  margin-top: 60px;
                   position: relative;
                   &::before {
                      content: '';
@@ -92,7 +101,7 @@
                      height: 1px;
                      background-color: #e0e0e0;
                      position: absolute;
-                     top: -32px;
+                     top: -27px;
                      left: -16px;
                   }
                   .submenu__item:not(:last-child) {

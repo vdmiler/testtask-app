@@ -27,7 +27,7 @@ const Header = () => {
          <Menu
             type="mobile"
             activeMenu={activeMenu}
-            deactivateMenu={()=>setActiveMenu(false)}
+            deactivateMenu={() => setActiveMenu(false)}
          />
       </header>
    );

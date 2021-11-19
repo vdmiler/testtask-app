@@ -4,6 +4,7 @@ import { menuItemsDesktop, menuItemsMobile } from '../../constants';
 import { Link } from 'react-scroll';
 import Submenu from '../Submenu/Submenu';
 import logo_img from '../../../img/logo.png';
+import drop_down_arrow_img from '../../../img/drop-down-arrow.png';
 
 const Menu = ({ type, activeMenu, deactivateMenu }) => {
    const [toggleSubMenu, setToggleSubMenu] = useState(false);
@@ -32,8 +33,9 @@ const Menu = ({ type, activeMenu, deactivateMenu }) => {
                                        {menuItem.label}
                                     </Link>
                                     : (
-                                       <div className="mobile-menu__item_dropdown" onClick={() => setToggleSubMenu(!toggleSubMenu)}>
+                                       <div className="mobile-menu__item_dropdown" onClick={e => { e.stopPropagation(); setToggleSubMenu(!toggleSubMenu) }}>
                                           {menuItem.label}
+                                          <img src={drop_down_arrow_img} alt="" className={`drop_down_arrow ${toggleSubMenu ? '_active' : ''}`} />
                                           <Submenu subItems={menuItem.subitems} activeSubMenu={toggleSubMenu} />
                                        </div>
                                     )
