@@ -6,7 +6,7 @@ import Button from '../Button/Button';
 import { excerptedText } from '../../functions';
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-const SUPPORTED_FORMATS = ['application/pdf'];
+const SUPPORTED_FORMATS = ['application/pdf', 'image/jpg', 'image/jpeg', 'image/png'];
 
 const BasisFormSchema = Yup.object().shape({
    name: Yup
