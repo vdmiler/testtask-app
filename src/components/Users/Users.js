@@ -5,39 +5,17 @@ import Heading from '../UI/Heading/Heading';
 import Button from '../UI/Button/Button';
 import Card from '../UI/Card/Card';
 import Loader from '../UI/Loader/Loader';
-import { getUnique } from '../functions';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUsersData, loadMoreUsers, unionLoadedUsers } from '../store/slices/usersDataSlice';
 
 const Users = () => {
-   const [users, setUsers] = useState([]);
-   const [isLoading, setIsLoading] = useState(false);
-   const [errorMsg, setErrorMsg] = useState('');
-   const [items, setItems] = useState(6)
+   const { usersData, countUsers, loadingUsers, errorUsers } = useSelector(state => state.usersData)
+   const dispatch = useDispatch();
 
    useEffect(() => {
-      const loadUsers = async () => {
-         try {
-            setIsLoading(true);
-            const response = await fetch(`https://frontend-test-assignment-api.abz.agency/api/v1/users?count=${items}`, {
-               method: 'GET',
-               headers: {
-                  'Content-type': 'application/json',
-                  'Authorization': 'Bearer eyJpdiI6Im9mV1NTMlFZQTlJeWlLQ3liVks1MGc9PSIsInZhbHVlIjoiRTJBbUR4dHp1dWJ3ekQ4bG85WVZya3ZpRGlMQ0g5ZHk4M05UNUY4Rmd3eFM3czc2UDRBR0E4SDR5WXlVTG5DUDdSRTJTMU1KQ2lUQmVZYXZZOHJJUVE9PSIsIm1hYyI6ImE5YmNiODljZjMzMTdmMDc4NjEwN2RjZTVkNzBmMWI0ZDQyN2YzODI5YjQxMzE4MWY0MmY0ZTQ1OGY4NTkyNWQifQ=='
-               }
-            })
-            const data = await response.json();
-            setUsers(getUnique([...users, ...data.users], 'id'))
-         } catch (error) {
-            setErrorMsg(`Error message: ${error}. Try again later.`);
-         } finally {
-            setIsLoading(false);
-         }
-      }
-      loadUsers();
-   }, [items])
-
-   const loadMore = () => {
-      setItems(prev => prev + 3);
-   }
+      dispatch(fetchUsersData(countUsers))
+      dispatch(unionLoadedUsers(usersData))
+   }, [countUsers])
 
    return (
       <Layout layoutName="users">
@@ -55,7 +33,7 @@ const Users = () => {
          </div>
          <ul className="users__list">
             {
-               users && users.map((item, index) => {
+               usersData && usersData.map((item, index) => {
                   return (
                      <Card
                         key={index}
@@ -69,12 +47,14 @@ const Users = () => {
                })
             }
          </ul>
-         {isLoading ? <Loader /> : null}
+         {loadingUsers ? <Loader /> :
+            errorUsers ? <span className="error-message">An error occerd: {errorUsers}</span> :
+               null}
          <Button
             classPrefix="users"
             classModifier="loadMore"
-            handleClick={loadMore}
-            content={isLoading ? 'Loading...' : 'Show more'}
+            handleClick={() => dispatch(loadMoreUsers(3))}
+            content={loadingUsers ? 'Loading...' : 'Show more'}
          />
       </Layout>
    );

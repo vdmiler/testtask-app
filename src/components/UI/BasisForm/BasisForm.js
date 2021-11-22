@@ -3,33 +3,41 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from "yup";
 import './BasisForm.scss';
 import Button from '../Button/Button';
-import { excerptedText } from '../../functions';
+import { excerptedText, getStorageWithExpiry, setStorageWithExpiry } from '../../functions';
+import { useDispatch } from 'react-redux';
+import { fetchFormData } from '../../store/slices/formDataSlice';
+import axios from 'axios';
 
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-const SUPPORTED_FORMATS = ['application/pdf', 'image/jpg', 'image/jpeg', 'image/png'];
+const emailPattern = /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/;
+const phonePattern = /^[\+]{0,1}380([0-9]{9})$/;
+const SUPPORTED_FORMATS = ['application/pdf', 'image/jpg', 'image/jpeg'];
 
 const BasisFormSchema = Yup.object().shape({
    name: Yup
       .string()
+      .min(2)
+      .max(60)
       .required('Required'),
    email: Yup
       .string()
-      .email('Invalid email')
+      .min(2)
+      .max(100)
+      .matches(emailPattern, 'Email address is not valid')
       .required('Required'),
    phone: Yup
       .string()
-      .matches(phoneRegExp, 'Phone number is not valid')
+      .matches(phonePattern, 'Phone number is not valid')
       .required('Required'),
    position: Yup
       .string()
       .required('Required'),
-   file: Yup.mixed()
+   photo: Yup.mixed()
       .nullable()
       .required('Required')
       .test(
          'FILE_SIZE',
          'File Size is too large',
-         value => !value || (value && value.size <= 8024 * 8024)
+         value => !value || (value && value.size <= 5e+6)
       )
       .test(
          'FILE_FORMAT',
@@ -43,11 +51,40 @@ const BasisFormValues = {
    email: '',
    phone: '',
    position: 'front',
-   file: ''
+   photo: ''
 }
 
 const BasisForm = ({ showModal }) => {
    const fileRef = useRef(null);
+   const dispatch = useDispatch();
+
+   const getPositionIds = async () => {
+      try {
+         const response = await axios('https://frontend-test-assignment-api.abz.agency/api/v1/positions');
+         const positions = await response.data.positions;
+         const randomItem = positions[Math.floor(Math.random() * positions.length)];
+         return randomItem.id;
+      } catch (error) {
+         console.log(error)
+      }
+   }
+
+   const getToken = async () => {
+      const token = getStorageWithExpiry('token');
+      if (!token) {
+         try {
+            const response = await axios('https://frontend-test-assignment-api.abz.agency/api/v1/token');
+            const code = await response.data.token;
+            setStorageWithExpiry('token', code, 2400);
+            return getStorageWithExpiry('token');
+         } catch (error) {
+            console.error(error);
+         }
+      } else {
+         return token;
+      }
+   }
+
    return (
       <>
          <Formik
@@ -58,8 +95,7 @@ const BasisForm = ({ showModal }) => {
 
             onSubmit={(values, { resetForm }) => {
                setTimeout(() => {
-                  //alert(JSON.stringify(values, null, 2));
-                  showModal(true)
+                  dispatch(fetchFormData({ values, getPositionIds, getToken, showModal }));
                }, 500);
                resetForm();
             }}
@@ -135,11 +171,11 @@ const BasisForm = ({ showModal }) => {
                         hidden
                         ref={fileRef}
                         type="file"
-                        name="file"
+                        name="photo"
                         placeholder="Upload"
                         className="basis__input"
                         onChange={e =>
-                           setFieldValue('file', e.target.files[0])
+                           setFieldValue('photo', e.target.files[0])
                         }
                      />
                      <button
@@ -151,9 +187,9 @@ const BasisForm = ({ showModal }) => {
                         Upload
                      </button>
                      <div className="path">
-                        {values.file.name && excerptedText(values.file.name)}
+                        {values.photo && values.photo.name && excerptedText(values.photo.name)}
                      </div>
-                     {errors.file && touched.file && (<div className="basis__error">{errors.file}</div>)}
+                     {errors.photo && touched.photo && (<div className="basis__error">{errors.photo}</div>)}
                   </div>
 
                   <Button
